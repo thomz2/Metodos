@@ -108,7 +108,7 @@ function botaoHandler() {
     const result = Integral(a, b, funcao, f, precisao);
 
     const textresposta = document.getElementById("resultado");
-    textresposta.value = result.valor;
+    textresposta.value = 'valor: ' + result.valor + '\nerro: ' + result.erro + '\ndivisoes:' + result.divisoes;
 
     console.log(result.valor);
     
