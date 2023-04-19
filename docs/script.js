@@ -47,19 +47,20 @@ function trapezioAberta(funcao, a, b){
 function grau2Aberta(funcao, a, b){
     let deltax = b-a, h = deltax/4;
     const x = (s) => a + h + s*h;
-    return (2*funcao(x(0)) - funcao(x(1) + 2*funcao(x(2))))*h*4/3;
+    return ((2*funcao(x(0)) - funcao(x(1)) + 2*funcao(x(2)))*h*4)/3;
 }
 
 function grau3Aberta(funcao, a, b){
     let deltax = b-a, h = deltax/5;
     const x = (s) => a + h + s*h;
-    return (11*funcao(x(0)) + funcao(x(1) + 2*funcao(x(2)) + 11*funcao(x(3))))*h*5/24;
+    return ((11*funcao(x(0)) + funcao(x(1)) + 2*funcao(x(2)) + 11*funcao(x(3)))*h*5)/24;
 }
 
 function grau4Aberta(funcao, a, b){
     let deltax = b-a, h = deltax/6;
     const x = (s) => a + s*h + h;
-    return (h/100)*(33*funcao(x(0)) - 42*funcao(x(1)) + 78*funcao(x(2)) - 42*funcao(x(3)) + 33*funcao(x(4)));
+    return (h/10)*(33*funcao(x(0)) - 42*funcao(x(1)) + 78*funcao(x(2)) - 42*funcao(x(3)) + 33*funcao(x(4)));
+    // tirei o h/10 e botei h/100
 }
 
 function botaoHandler() {
