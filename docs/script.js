@@ -53,7 +53,7 @@ function grau2Aberta(funcao, a, b){
 function grau3Aberta(funcao, a, b){
     let deltax = b-a, h = deltax/5;
     const x = (s) => a + h + s*h;
-    return ((11*funcao(x(0)) + funcao(x(1)) + 2*funcao(x(2)) + 11*funcao(x(3)))*h*5)/24;
+    return ((11*funcao(x(0)) + funcao(x(1)) + funcao(x(2)) + 11*funcao(x(3)))*h*5)/24;
 }
 
 function grau4Aberta(funcao, a, b){
