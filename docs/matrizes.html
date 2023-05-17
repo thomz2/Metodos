@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Método da Potência</title>
+    <link rel="stylesheet" href="index.css">
+    <script>
+        function metodoPotencia() {
+            var inputMatrix = document.getElementById('matrix').value;
+            var matrix = parseMatrix(inputMatrix);
+
+            var maxIterations = 1000;
+            var epsilon = 0.00001;
+
+            // Inicialização do vetor estimado
+            var n = matrix.length;
+            var initialVector = [];
+            for (var i = 0; i < n; i++) {
+                initialVector.push(1);
+            }
+
+            var eigenvalue = 0;
+            var eigenvector = initialVector;
+
+            for (var iteration = 0; iteration < maxIterations; iteration++) {
+                var nextEigenvector = matrixVectorMultiply(matrix, eigenvector);
+
+                // Normalização
+                var norm = vectorNorm(nextEigenvector);
+                nextEigenvector = scalarMultiply(nextEigenvector, 1 / norm);
+
+                var nextEigenvalue = dotProduct(nextEigenvector, eigenvector);
+
+                // Convergência
+                if (Math.abs(nextEigenvalue - eigenvalue) < epsilon) {
+                    eigenvector = nextEigenvector;
+                    eigenvalue = nextEigenvalue;
+                    break;
+                }
+
+                eigenvector = nextEigenvector;
+                eigenvalue = nextEigenvalue;
+            }
+
+            // Exibição do resultado
+            var resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = "<strong>Autovalor:</strong> " + eigenvalue.toFixed(4) + "<br><strong>Autovetor:</strong> [ " + eigenvector.join(", ") + " ]";
+        }
+
+        function parseMatrix(inputMatrix) {
+            var rows = inputMatrix.trim().split("\n");
+            var matrix = [];
+            for (var i = 0; i < rows.length; i++) {
+                var row = rows[i].trim().split(/\s+/);
+                matrix.push(row.map(Number));
+            }
+            return matrix;
+        }
+
+        function matrixVectorMultiply(matrix, vector) {
+            var result = [];
+            for (var i = 0; i < matrix.length; i++) {
+                var row = matrix[i];
+                var sum = 0;
+                for (var j = 0; j < row.length; j++) {
+                    sum += row[j] * vector[j];
+                }
+                result.push(sum);
+            }
+            return result;
+        }
+
+        function scalarMultiply(vector, scalar) {
+            return vector.map(function (x) {
+                return x * scalar;
+            });
+        }
+
+        function vectorNorm(vector) {
+            var sumOfSquares = vector.reduce(function (sum, x) {
+                return sum + (x * x);
+            }, 0);
+            return Math.sqrt(sumOfSquares);
+        }
+
+        function dotProduct(vector1, vector2) {
+            var product = 0;
+            for (var i = 0; i < vector1.length; i++) {
+                product += vector1[i] * vector2[i];
+            }
+            return product;
+        }
+    </script>
+</head>
+<body>
+
+    <nav>
+        <ul>
+          <li><a href="index.html">Integração</a></li>
+          <li><a href="matrizes.html">Matrizes</a></li>
+        </ul>
+    </nav>
+
+    <div id="corpo">
+    <center>
+        <h1 id="titulo">Método da Potência</h1>
+        <p>Insira a matriz:</p>
+        <textarea id="matrix" rows="5" cols="20" placeholder="1 2 3
+                                                              1 2 3 
+                                                              1 2 3"></textarea>
+        <br>
+        <button onclick="metodoPotencia()">Calcular</button>
+        <div id="result"></div>
+    </center>
+    </div>
+</body>
+</html>

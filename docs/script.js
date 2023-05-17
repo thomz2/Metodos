@@ -1,18 +1,39 @@
-function Integral(a,b,funcao,estimativa,precisao){
+function Integral(xi,xf,funcao,estimador,precisao){
     let N=1, Aold = 0, erro = 1;
     while(erro > precisao){
         N *= 2;
         var A = 0;
-        let Dx = (b-a)/N;
+        let Dx = (xf-xi)/N;
         for(let k=0;k<N;k++){
-            const xi = a + Dx*k;
-            const xf = a + Dx*(k+1);
-            A += estimativa(funcao, xi, xf);
+            const a = xi + Dx*k;
+            const b = xi + Dx*(k+1);
+            A += estimador(funcao, a, b);
         }
         erro = Math.abs((A-Aold)/A);
         Aold = A;
     }
     return {valor:A, erro: erro, divisoes: N};
+}
+
+function EstimadorLegendre(data){
+
+    const raizes = data.raizes;
+    const pesos  = data.pesos;
+
+    let legendre = function(funcao,a,b){
+
+        let x = (s) => (a+b)/2 + s*(b-a)/2;
+
+        const valores = raizes.map((raiz, i) => funcao(x(raiz))*pesos[i]);
+
+        const soma = valores.reduce((pi,p)=> pi+p, 0);
+
+        return soma*(b-a)/2;
+    }
+
+    legendre.grau = raizes.length;
+
+    return legendre;
 }
 
 function trapezioFechada(funcao, a, b){
@@ -47,19 +68,20 @@ function trapezioAberta(funcao, a, b){
 function grau2Aberta(funcao, a, b){
     let deltax = b-a, h = deltax/4;
     const x = (s) => a + h + s*h;
-    return (2*funcao(x(0)) - funcao(x(1) + 2*funcao(x(2))))*h*4/3;
+    return ((2*funcao(x(0)) - funcao(x(1)) + 2*funcao(x(2)))*h*4)/3;
 }
 
 function grau3Aberta(funcao, a, b){
     let deltax = b-a, h = deltax/5;
     const x = (s) => a + h + s*h;
-    return (11*funcao(x(0)) + funcao(x(1) + 2*funcao(x(2)) + 11*funcao(x(3))))*h*5/24;
+    return ((11*funcao(x(0)) + funcao(x(1)) + funcao(x(2)) + 11*funcao(x(3)))*h*5)/24;
 }
 
 function grau4Aberta(funcao, a, b){
     let deltax = b-a, h = deltax/6;
     const x = (s) => a + s*h + h;
-    return (h/100)*(33*funcao(x(0)) - 42*funcao(x(1)) + 78*funcao(x(2)) - 42*funcao(x(3)) + 33*funcao(x(4)));
+    return (h/10)*(33*funcao(x(0)) - 42*funcao(x(1)) + 78*funcao(x(2)) - 42*funcao(x(3)) + 33*funcao(x(4)));
+    // tirei o h/10 e botei h/100
 }
 
 function botaoHandler() {
@@ -71,41 +93,53 @@ function botaoHandler() {
     const b = parseFloat(document.getElementById("b").value);
     const precisao = parseFloat(document.getElementById("precisao").value);
 
-    let f;
+    let estimador;
 
     switch (selecionado) {
         case "trapeziofechada":
-            f = trapezioFechada;
+            estimador = trapezioFechada;
             break;
         case "trapezioaberta":
-            f = trapezioAberta;
+            estimador = trapezioAberta;
             break;
         case "grau2fechada":
-            f = grau2Fechada;
+            estimador = grau2Fechada;
             break;
         case "grau2aberta":
-            f = grau2Aberta;
+            estimador = grau2Aberta;
             break;
         case "grau3fechada":
-            f = grau3Fechada;
+            estimador = grau3Fechada;
             break;
         case "grau3aberta":
-            f = grau3Aberta;
+            estimador = grau3Aberta;
             break;
         case "grau4fechada":
-            f = grau4Fechada;
+            estimador = grau4Fechada;
             break;
         case "grau4aberta":
-            f = grau4Aberta;
+            estimador = grau4Aberta;
             break;
-    
+        case "legendre segundo grau":
+            estimador = EstimadorLegendre({
+                                            raizes:[Math.sqrt(1/3), -Math.sqrt(1/3)], 
+                                            pesos: [1,1]
+                                         });
+            break;
+
+        case "legendre quarto grau":
+            estimador = EstimadorLegendre({
+                                            raizes:[-0.8611363116,  -0.3399810436,  0.3399810436,  0.8611363116], 
+                                            pesos: [ 0.3478548451, 0.6521451549, 0.6521451549 ,  0.3478548451]
+                                            });
+            break;
         default:
             break;
     }
 
     const funcao = eval("x => " + "{ return " + textfuncao.value + "}");
 
-    const result = Integral(a, b, funcao, f, precisao);
+    const result = Integral(a, b, funcao, estimador, precisao);
 
     const textresposta = document.getElementById("resultado");
     textresposta.value = 'valor: ' + result.valor + '\nerro: ' + result.erro + '\ndivisoes:' + result.divisoes;
