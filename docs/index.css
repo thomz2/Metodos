@@ -108,6 +108,31 @@
     height: 50px;
   }
 
+  .passo {
+    display: flex;
+    border: 3px dashed #333;
+    border-radius: 2px;
+    margin: 30px;
+    justify-content: center;
+  }
+
+  .vetor {
+    display: inline;
+    margin: 15px;
+  }
+
+  .vetor li {
+    display: block;
+  }
+
+  .seta {
+    margin: 10px;
+  }
+
+  .valor {
+    margin: 10px;
+  }
+
   #resultado {
     height: 100px;
   }

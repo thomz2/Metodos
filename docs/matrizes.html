@@ -9,7 +9,7 @@
             var matrix = parseMatrix(inputMatrix);
 
             var maxIterations = 1000;
-            var epsilon = 0.00001;
+            var precisao = parseFloat(document.getElementById("precisao").value);
 
             // Inicialização do vetor estimado
             var n = matrix.length;
@@ -21,17 +21,32 @@
             var eigenvalue = 0;
             var eigenvector = initialVector;
 
-            for (var iteration = 0; iteration < maxIterations; iteration++) {
-                var nextEigenvector = matrixVectorMultiply(matrix, eigenvector);
+            var processo = document.getElementById("processo");
+            processo.innerHTML = "";
 
-                // Normalização
+            for (var iteration = 0; iteration < maxIterations; iteration++) {
+                // adicionando matriz sem alteracoes
+                var passo = document.createElement("li");
+                passo.className = "passo"
+                passo.appendChild(createVectorElem(eigenvector));
+                passo.appendChild(createTextElem("p", "mult→", "seta"));
+
+                // adicionando matriz depois da multiplicacao
+                var nextEigenvector = matrixVectorMultiply(matrix, eigenvector);
+                passo.appendChild(createVectorElem(nextEigenvector));
+                passo.appendChild(createTextElem("p", "norm→", "seta"));
+
+                // adicionando matriz normalizada
                 var norm = vectorNorm(nextEigenvector);
                 nextEigenvector = scalarMultiply(nextEigenvector, 1 / norm);
+                passo.appendChild(createVectorElem(nextEigenvector));
+                passo.appendChild(createTextElem("p", "→", "seta"));
 
                 var nextEigenvalue = dotProduct(nextEigenvector, eigenvector);
+                passo.appendChild(createTextElem("p", nextEigenvalue, "valor"));
 
                 // Convergência
-                if (Math.abs(nextEigenvalue - eigenvalue) < epsilon) {
+                if (Math.abs(nextEigenvalue - eigenvalue) < precisao) {
                     eigenvector = nextEigenvector;
                     eigenvalue = nextEigenvalue;
                     break;
@@ -39,6 +54,10 @@
 
                 eigenvector = nextEigenvector;
                 eigenvalue = nextEigenvalue;
+                console.log(eigenvalue, eigenvector);
+
+                // adicionando passo atual
+                processo.appendChild(passo);
             }
 
             // Exibição do resultado
@@ -56,6 +75,7 @@
             return matrix;
         }
 
+        // matrix * vetor
         function matrixVectorMultiply(matrix, vector) {
             var result = [];
             for (var i = 0; i < matrix.length; i++) {
@@ -69,12 +89,14 @@
             return result;
         }
 
+        // multiplicacao dos elementos do vetor por um escalar
         function scalarMultiply(vector, scalar) {
             return vector.map(function (x) {
                 return x * scalar;
             });
         }
 
+        // somar o quadrado dos valores do vetor e retornar sua raiz
         function vectorNorm(vector) {
             var sumOfSquares = vector.reduce(function (sum, x) {
                 return sum + (x * x);
@@ -82,6 +104,7 @@
             return Math.sqrt(sumOfSquares);
         }
 
+        // produto escalar de vetores
         function dotProduct(vector1, vector2) {
             var product = 0;
             for (var i = 0; i < vector1.length; i++) {
@@ -89,6 +112,46 @@
             }
             return product;
         }
+
+        function createMatrixElem(matrix) {
+            var tableElem = document.createElement("table");
+            for (var i = 0; i < matrix.length; i++) {
+                var rowElem = document.createElement("tr");
+
+                for (var j = 0; j < matrix[i].length; j++) {
+                    var cellElem = document.createElement("td");
+                    cellElem.textContent = matrix[i][j];
+                    rowElem.appendChild(cellElem);
+                }
+                
+                tableElem.appendChild(rowElem);
+            }
+            console.log(tableElem);
+            return tableElem;
+        }
+
+        function createVectorElem(vector) {
+
+            var ulElem = document.createElement("ul");
+            ulElem.className = "vetor";
+
+            for (var i = 0; i < vector.length; i++) {
+                var liElem = document.createElement("li");
+                liElem.textContent = vector[i];
+                ulElem.appendChild(liElem);
+            }
+
+            return ulElem;
+        }
+
+        function createTextElem(tag, text, classe) {
+            var elem = document.createElement(tag);
+            elem.innerText = text;
+            elem.className = classe;
+
+            return elem;
+        }
+
     </script>
 </head>
 <body>
@@ -103,12 +166,17 @@
     <div id="corpo">
     <center>
         <h1 id="titulo">Método da Potência</h1>
+        <input id="precisao" type="number" value="precisao" placeholder="precisao">
         <p>Insira a matriz:</p>
         <textarea id="matrix" rows="5" cols="20" placeholder="1 2 3
                                                               1 2 3 
                                                               1 2 3"></textarea>
         <br>
         <button onclick="metodoPotencia()">Calcular</button>
+        
+        <br>
+        <ul id="processo"></ul>
+
         <div id="result"></div>
     </center>
     </div>
