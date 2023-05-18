@@ -18,46 +18,46 @@
                 initialVector.push(1);
             }
 
-            var eigenvalue = 0;
-            var eigenvector = initialVector;
-
             var processo = document.getElementById("processo");
             processo.innerHTML = "";
 
+            // inicializacao
+            var eigenvalue = 0;
+            var eigenvector = initialVector;
+
             for (var iteration = 0; iteration < maxIterations; iteration++) {
-                // adicionando matriz sem alteracoes
+
                 var passo = document.createElement("li");
-                passo.className = "passo"
+                passo.className = "passo";
+                
+                // copiar valores
+                var oldEigenvalue = eigenvalue;
+                var oldEigenvector = eigenvector;
+                passo.appendChild(createVectorElem(oldEigenvector));
+                passo.appendChild(createTextElem("p", "norm→", "vert seta"));
+
+                // normalizar
+                var oldX1 = scalarMultiply(oldEigenvector, 1 / vectorNorm(oldEigenvector));
+                passo.appendChild(createVectorElem(oldX1));
+                passo.appendChild(createTextElem("p", "mult→", "vert seta"));
+
+                // calcular vetor nao normalizado
+                eigenvector = matrixVectorMultiply(matrix, oldX1);
                 passo.appendChild(createVectorElem(eigenvector));
-                passo.appendChild(createTextElem("p", "mult→", "seta"));
+                passo.appendChild(createTextElem("p", "→", "vert seta"));
 
-                // adicionando matriz depois da multiplicacao
-                var nextEigenvector = matrixVectorMultiply(matrix, eigenvector);
-                passo.appendChild(createVectorElem(nextEigenvector));
-                passo.appendChild(createTextElem("p", "norm→", "seta"));
+                // calcular nova estimativa do autovalor
+                eigenvalue = dotProduct(oldX1, eigenvector);
+                passo.appendChild(createTextElem("p", eigenvalue, "vert autovalor"));
 
-                // adicionando matriz normalizada
-                var norm = vectorNorm(nextEigenvector);
-                nextEigenvector = scalarMultiply(nextEigenvector, 1 / norm);
-                passo.appendChild(createVectorElem(nextEigenvector));
-                passo.appendChild(createTextElem("p", "→", "seta"));
+                processo.appendChild(passo);
 
-                var nextEigenvalue = dotProduct(nextEigenvector, eigenvector);
-                passo.appendChild(createTextElem("p", nextEigenvalue, "valor"));
-
-                // Convergência
-                if (Math.abs(nextEigenvalue - eigenvalue) < precisao) {
-                    eigenvector = nextEigenvector;
-                    eigenvalue = nextEigenvalue;
+                // checar convergencia
+                if (Math.abs((eigenvalue-oldEigenvalue)/eigenvalue) <= precisao) { 
+                    eigenvector = oldX1;
                     break;
                 }
-
-                eigenvector = nextEigenvector;
-                eigenvalue = nextEigenvalue;
-                console.log(eigenvalue, eigenvector);
-
-                // adicionando passo atual
-                processo.appendChild(passo);
+                
             }
 
             // Exibição do resultado
@@ -113,6 +113,7 @@
             return product;
         }
 
+        // funcoes p/ html
         function createMatrixElem(matrix) {
             var tableElem = document.createElement("table");
             for (var i = 0; i < matrix.length; i++) {
@@ -145,11 +146,13 @@
         }
 
         function createTextElem(tag, text, classe) {
+            var div = document.createElement("div");
+            div.className = classe;
             var elem = document.createElement(tag);
             elem.innerText = text;
-            elem.className = classe;
+            div.appendChild(elem);
 
-            return elem;
+            return div;
         }
 
     </script>
@@ -175,9 +178,10 @@
         <button onclick="metodoPotencia()">Calcular</button>
         
         <br>
+        <br>
+        <div id="result"></div>
         <ul id="processo"></ul>
 
-        <div id="result"></div>
     </center>
     </div>
 </body>

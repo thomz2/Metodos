@@ -125,8 +125,19 @@
     display: block;
   }
 
+  .vert {
+    display: table;
+    margin: 15px;
+  }
+
+  .vert p {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+  }
+
   .seta {
-    margin: 10px;
+  
   }
 
   .valor {
