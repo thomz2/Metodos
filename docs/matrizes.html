@@ -1,161 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>Método da Potência</title>
-    <link rel="stylesheet" href="index.css">
-    <script>
-        function metodoPotencia() {
-            var inputMatrix = document.getElementById('matrix').value;
-            var matrix = parseMatrix(inputMatrix);
-
-            var maxIterations = 1000;
-            var precisao = parseFloat(document.getElementById("precisao").value);
-
-            // Inicialização do vetor estimado
-            var n = matrix.length;
-            var initialVector = [];
-            for (var i = 0; i < n; i++) {
-                initialVector.push(1);
-            }
-
-            var processo = document.getElementById("processo");
-            processo.innerHTML = "";
-
-            // inicializacao
-            var eigenvalue = 0;
-            var eigenvector = initialVector;
-
-            for (var iteration = 0; iteration < maxIterations; iteration++) {
-
-                var passo = document.createElement("li");
-                passo.className = "passo";
-                
-                // copiar valores
-                var oldEigenvalue = eigenvalue;
-                var oldEigenvector = eigenvector;
-                passo.appendChild(createVectorElem(oldEigenvector));
-                passo.appendChild(createTextElem("p", "norm→", "vert seta"));
-
-                // normalizar
-                var oldX1 = scalarMultiply(oldEigenvector, 1 / vectorNorm(oldEigenvector));
-                passo.appendChild(createVectorElem(oldX1));
-                passo.appendChild(createTextElem("p", "mult→", "vert seta"));
-
-                // calcular vetor nao normalizado
-                eigenvector = matrixVectorMultiply(matrix, oldX1);
-                passo.appendChild(createVectorElem(eigenvector));
-                passo.appendChild(createTextElem("p", "→", "vert seta"));
-
-                // calcular nova estimativa do autovalor
-                eigenvalue = dotProduct(oldX1, eigenvector);
-                passo.appendChild(createTextElem("p", eigenvalue, "vert autovalor"));
-
-                processo.appendChild(passo);
-
-                // checar convergencia
-                if (Math.abs((eigenvalue-oldEigenvalue)/eigenvalue) <= precisao) { 
-                    eigenvector = oldX1;
-                    break;
-                }
-                
-            }
-
-            // Exibição do resultado
-            var resultDiv = document.getElementById('result');
-            resultDiv.innerHTML = "<strong>Autovalor:</strong> " + eigenvalue.toFixed(4) + "<br><strong>Autovetor:</strong> [ " + eigenvector.join(", ") + " ]";
-        }
-
-        function parseMatrix(inputMatrix) {
-            var rows = inputMatrix.trim().split("\n");
-            var matrix = [];
-            for (var i = 0; i < rows.length; i++) {
-                var row = rows[i].trim().split(/\s+/);
-                matrix.push(row.map(Number));
-            }
-            return matrix;
-        }
-
-        // matrix * vetor
-        function matrixVectorMultiply(matrix, vector) {
-            var result = [];
-            for (var i = 0; i < matrix.length; i++) {
-                var row = matrix[i];
-                var sum = 0;
-                for (var j = 0; j < row.length; j++) {
-                    sum += row[j] * vector[j];
-                }
-                result.push(sum);
-            }
-            return result;
-        }
-
-        // multiplicacao dos elementos do vetor por um escalar
-        function scalarMultiply(vector, scalar) {
-            return vector.map(function (x) {
-                return x * scalar;
-            });
-        }
-
-        // somar o quadrado dos valores do vetor e retornar sua raiz
-        function vectorNorm(vector) {
-            var sumOfSquares = vector.reduce(function (sum, x) {
-                return sum + (x * x);
-            }, 0);
-            return Math.sqrt(sumOfSquares);
-        }
-
-        // produto escalar de vetores
-        function dotProduct(vector1, vector2) {
-            var product = 0;
-            for (var i = 0; i < vector1.length; i++) {
-                product += vector1[i] * vector2[i];
-            }
-            return product;
-        }
-
-        // funcoes p/ html
-        function createMatrixElem(matrix) {
-            var tableElem = document.createElement("table");
-            for (var i = 0; i < matrix.length; i++) {
-                var rowElem = document.createElement("tr");
-
-                for (var j = 0; j < matrix[i].length; j++) {
-                    var cellElem = document.createElement("td");
-                    cellElem.textContent = matrix[i][j];
-                    rowElem.appendChild(cellElem);
-                }
-                
-                tableElem.appendChild(rowElem);
-            }
-            console.log(tableElem);
-            return tableElem;
-        }
-
-        function createVectorElem(vector) {
-
-            var ulElem = document.createElement("ul");
-            ulElem.className = "vetor";
-
-            for (var i = 0; i < vector.length; i++) {
-                var liElem = document.createElement("li");
-                liElem.textContent = vector[i];
-                ulElem.appendChild(liElem);
-            }
-
-            return ulElem;
-        }
-
-        function createTextElem(tag, text, classe) {
-            var div = document.createElement("div");
-            div.className = classe;
-            var elem = document.createElement(tag);
-            elem.innerText = text;
-            div.appendChild(elem);
-
-            return div;
-        }
-
-    </script>
+    <link rel="stylesheet" href="index2.css">
+    <script src="scriptmatrizes.js"></script>
 </head>
 <body>
 
@@ -168,14 +16,20 @@
 
     <div id="corpo">
     <center>
-        <h1 id="titulo">Método da Potência</h1>
+        <h1 id="titulo">Matrizes</h1>
+        
+        <select id="opcoes" name="select">
+            <option value="metodopotencia">metodo da potencia</option>
+            <option value="metodopotenciainversa">metodo da potencia inversa</option>
+        </select>
+
         <input id="precisao" type="number" value="precisao" placeholder="precisao">
         <p>Insira a matriz:</p>
         <textarea id="matrix" rows="5" cols="20" placeholder="1 2 3
                                                               1 2 3 
                                                               1 2 3"></textarea>
         <br>
-        <button onclick="metodoPotencia()">Calcular</button>
+        <button onclick="botaoHandler()">Calcular</button>
         
         <br>
         <br>

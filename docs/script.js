@@ -87,7 +87,6 @@ function grau4Aberta(funcao, a, b){
 function botaoHandler() {
 
     const selecionado = document.getElementById("opcoes").value;
-    console.log(selecionado);
     const textfuncao = document.getElementById("funcao");
     const a = parseFloat(document.getElementById("a").value);
     const b = parseFloat(document.getElementById("b").value);

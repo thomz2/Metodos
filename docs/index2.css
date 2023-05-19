@@ -1,0 +1,163 @@
+/* centering the content */
+body {
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+    margin: 0;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  
+  nav {
+    background-color: #333;
+    padding: 10px;
+  }
+  
+  ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  li {
+    display: inline-block;
+    margin-right: 10px;
+  }
+  
+  a {
+    color: white;
+    text-decoration: none;
+    padding: 5px;
+  }
+  
+  a:hover {
+    background-color: #555;
+  }
+  
+  #corpo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* styling the form */
+  form {
+    max-width: 500px;
+    width: 90%; /* Alteração para responsividade */
+    padding: 20px;
+    background: #fff;
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+  }
+  
+  h1 {
+    margin-top: 0;
+    text-align: center;
+  }
+  
+  #titulo {
+    margin-top: 20px;
+  }
+  
+  /* styling the select */
+  select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    margin-bottom: 10px;
+  }
+  
+  /* styling the inputs */
+  input[type="number"],
+  input[type="text"],
+  textarea {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: none;
+    margin-bottom: 10px;
+  }
+  
+  input[type="text"] {
+    width: 100%; /* Alteração para responsividade */
+  }
+  
+  /* styling the button */
+  button {
+    background: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  button:hover {
+    background: #0069d9;
+  }
+  
+  /* styling the textareas */
+  textarea {
+    resize: none;
+  }
+  
+  #funcao {
+    height: 50px;
+  }
+  
+  .passo {
+    display: flex;
+    border: 3px dashed #333;
+    border-radius: 2px;
+    margin: 30px;
+    justify-content: center;
+  }
+  
+  .vetor {
+    display: inline;
+    margin: 15px;
+  }
+  
+  .vetor li {
+    display: block;
+  }
+  
+  .vert {
+    display: table;
+    margin: 15px;
+  }
+  
+  .vert p {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+  }
+  
+  .seta {
+    
+  }
+  
+  .valor {
+    margin: 10px;
+  }
+  
+  #resultado {
+    height: 100px;
+  }
+  
+  #result {
+    margin: 10px;
+  }
+  
+  /* responsive styling */
+  @media only screen and (max-width: 600px) {
+    form {
+      width: 100%; /* Alteração para responsividade */
+    }
+  }
+  
