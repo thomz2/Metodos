@@ -60,6 +60,7 @@ function metodoPotencia() {
 }
 
 function metodoPotenciaInversa() {
+
     var inputMatrix = document.getElementById('matrix').value;
     var matrix = parseMatrix(inputMatrix);
 
@@ -78,6 +79,59 @@ function metodoPotenciaInversa() {
 
     var {L, U} = decomposeLU(matrix);
     console.log("LU:", L, U);
+
+    var newEigenValueBar = 0;
+    var newEigenvector = initialVector;
+
+    var eigenvalue = 0;
+
+    for (var iteration = 0; iteration < maxIterations; iteration++) {
+
+        var passo = document.createElement("li");
+        passo.className = "passo";
+
+        // step 5 e 6
+        var oldEigenvalueBar = newEigenValueBar;
+        var oldEigenvector = newEigenvector;
+        passo.appendChild(createVectorElem(oldEigenvector));
+        passo.appendChild(createTextElem("p", "norm→", "vert seta"));
+        
+        var oldX1 = scalarMultiply(oldEigenvector, 1 / vectorNorm(oldEigenvector));
+        // console.log('oldX1:', oldX1);
+        passo.appendChild(createVectorElem(oldX1));
+        passo.appendChild(createTextElem("p", "mult→", "vert seta"));
+        
+        // console.log("L:");
+        var yL = resolveSistema(L, oldX1, true);
+        // console.log("U:");
+        var xU = resolveSistema(U, yL, false);
+        
+        // console.log("resL:", yL, "resU:", xU);
+
+        // step 8
+        newEigenvector = xU;
+        passo.appendChild(createVectorElem(newEigenvector));
+        passo.appendChild(createTextElem("p", "→", "vert seta"));
+
+        // step 9
+        newEigenValueBar = dotProduct(oldX1, newEigenvector);
+        passo.appendChild(createTextElem("p", newEigenValueBar, "vert autovalor"));
+
+        processo.appendChild(passo);
+
+        // steps 10, 11 e 12
+        if (Math.abs((newEigenValueBar-oldEigenvalueBar)/newEigenValueBar) <= precisao) {
+            eigenvalue = 1 / newEigenValueBar;
+            newEigenvector = oldX1;
+            break;
+        }
+
+        // step 13
+        // imprimir(eigenvalue, newEigenvector)
+    }
+
+    var resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = "<strong>Autovalor Inv:</strong> " + eigenvalue.toFixed(4) + "<br><strong>Autovetor:</strong> [ " + newEigenvector.join(", ") + " ]";
 }
 
 function parseMatrix(inputMatrix) {
@@ -152,12 +206,51 @@ function decomposeLU(matrix) {
     for (let i = 0; i < n; ++i) {
         for (let k = i+1; k < n; ++ k) {
             const Uki = U[k][i]; // salvar antes de zerar
-            U = subtraiLinha(U, k, i, U[k][i]/U[i][i]);
-            L[k][i] = Uki/U[i][i];
+
+            // testar isso mais depois
+            if (U[i][i] == 0) {   
+                U = subtraiLinha(U, k, i, 1);
+                L[k][i] = 0;
+            } else {
+                U = subtraiLinha(U, k, i, U[k][i]/U[i][i]);
+                L[k][i] = Uki/U[i][i];
+            }
         }
     }
     
     return { L, U };
+}
+
+function resolveSistema(matrix, vetor, embaixo) {
+    
+    let n = matrix.length; let step = 1; let comeco = 0;
+    let res = [];
+
+    for (let i = 0; i < n; ++i) {
+        res.push(NaN);
+    }
+    
+    if (!embaixo) {
+        step = -1; comeco = n-1; n = -1;
+    }   
+
+    // if ... inverter resultado
+
+    for (let i = comeco; i != n; i += step) {
+
+        let acumulador = 0;
+        for (let j = comeco; j != i; j += step) {
+            console.log('j=', j, 'i=', i, '|', acumulador, '=', matrix[i][j], '*', res[j])
+            acumulador += matrix[i][j] * res[j];
+        }
+        
+        res[i] = (vetor[i] - acumulador) / (matrix[i][i] == 0 ? 1 : matrix[i][i]) 
+        console.log('i=', i, 'res[i]=', res[i]);
+
+    }
+
+    return res;
+
 }
 
 // funcoes p/ html
